@@ -1,4 +1,4 @@
-{x2;include:header}
+{x2;include:../../../common/view/app/header}
 <body>
 {x2;include:top}
 <div class="container-fluid">
@@ -88,6 +88,6 @@
         });
     });
 </script>
-{x2;include:footer}
+{x2;include:../../../common/view/app/footer}
 </body>
 </html>

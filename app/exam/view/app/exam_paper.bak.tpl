@@ -1,4 +1,4 @@
-{x2;include:header}
+{x2;include:../../../common/view/app/header}
 <body>
 <div class="container-fluid">
 	<div class="row-fluid header">
@@ -368,7 +368,7 @@
 		</div>
 	</div>
 </div>
-{x2;include:footer}
+{x2;include:../../../common/view/app/footer}
 <script>
     $(function () {
         var init = true;

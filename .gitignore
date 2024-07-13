@@ -2,3 +2,5 @@
 /public/data/
 .idea
 /public/log.txt
+/.env
+/vendor/

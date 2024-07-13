@@ -1,4 +1,4 @@
-{x2;include:header}
+{x2;include:../../../common/view/app/header}
 <body>
 {x2;include:top}
 <div class="container-fluid">
@@ -327,7 +327,7 @@
         </div>
     </div>
 </div>
-{x2;include:footer}
+{x2;include:../../../common/view/app/footer}
 <script>
     function prepage(){
         {x2;if:$number > 1}

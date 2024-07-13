@@ -9,6 +9,9 @@
 namespace exam\model;
 
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 class question
 {
     static function getQuestypeById($id)
@@ -187,6 +190,7 @@ class question
                 array("AND","questionid = :questionid","questionid",$id)
             )
         );
+
         \pepdo::getInstance($db)->updateElement($data);
     }
 
@@ -315,7 +319,154 @@ class question
         return true;
     }
 
-    static function importQuestions($uploadfile,$subject)
+    static function importQuestionByXlsxSheet(Worksheet $sheet, $subject, &$number, &$qrid)
+    {
+
+        // 定义索引
+        $numberIndex = 'A';
+        $contentIndex = 'B';
+        $typeIndex = 'C';
+        $levelIndex = 'D';
+        $answerIndex = 'E';
+        $analyzeIndex = 'F';
+
+        // 题型映射
+//        $typeMap = [1 => 'DXT', 2 => 'PDT', 3 => 'TKT'];
+
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        // 获取表头
+        $header = $sheet->rangeToArray('A1:'.$highestColumn.'1', null, true, true, true)[1];
+
+        // 获取试题选项和扩展项索引
+        $optionsIndexArr = [];
+        $knowsIdIndex = '';
+        $isQRIndex = '';
+        $isTitleIndex = '';
+        foreach ($header as $key => $value) {
+            // 移除空格、bom标记和换行制表符
+            $str = trim($value, " \xEF\xBB\xBF\n\t");
+
+            // 如果不是UTF8编码，则转换为UTF8
+            $encoding = mb_detect_encoding($str, mb_list_encodings(), true);
+            if ($encoding !== "UTF-8") $str = iconv($encoding, "UTF-8//IGNORE", $str);
+            $header[$key] = $str;
+
+            if ($value == '是否题冒题') { $isQRIndex = $key; continue; }
+            if ($value == '是否题冒') { $isTitleIndex = $key; continue; }
+            if ($value == '知识点ID') { $knowsIdIndex = $key; continue; }
+
+            if (preg_match('/选项[A-Z]/', $value)) {
+                $name = mb_substr($value, -1, 1);
+                $optionsIndexArr[$name] = $key;
+                continue;
+            }
+        }
+
+        ksort($optionsIndexArr);
+
+        // 遍历数据
+        for ($row = 2; $row <= $highestRow; $row++) {
+            // 获取整行数据
+            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, true, true)[$row];
+
+            // 处理编码格式
+            foreach ($rowData as $key => $value) {
+                // 移除bom标记
+                $str = trim($value, "\xEF\xBB\xBF");
+                // 转换编码
+                $encoding = mb_detect_encoding($str, mb_list_encodings(), true);
+                if ($encoding !== "UTF-8") $str = iconv($encoding, "UTF-8//IGNORE", $str);
+                $rowData[$key] = $str;
+            }
+
+            // 转换选项
+            $optionsHtmlStr = '<p>';
+            foreach ($optionsIndexArr as $name => $index) {
+                if (in_array($rowData[$index], ["", " "])) continue;
+                $optionsHtmlStr .= $rowData[$index] . '<hr/>';
+            }
+            $optionsHtmlStr = rtrim($optionsHtmlStr, '<hr/>') . '</p>';
+
+            // 格式化数据
+            $isQR = !!intval(trim($rowData[$isQRIndex]," \n\t"));
+            $isTitle = !!intval(trim($rowData[$isTitleIndex]," \n\t"));
+            $questionContent = \route::initData($rowData[$contentIndex]);
+            $questionType = trim($rowData[$typeIndex], " \n\t");
+            $questionLevel = intval(trim($rowData[$levelIndex]," \n\t"));
+            $questionOptions = \route::initData($optionsHtmlStr);
+            $questionAnswer = \route::initData($rowData[$answerIndex]);
+            $questionAnalyze = \route::initData($rowData[$analyzeIndex]);
+
+            // 如果是题冒，则添加到题冒
+            if ($isTitle) {
+                if($qrid) self::resetRowsQuestionNumber($subject['subjectdb'],$qrid);
+                $insertQuestionRowsData = [];
+                $insertQuestionRowsData['qrtype'] = $questionType;
+                $insertQuestionRowsData['qrquestion'] = $questionContent;
+                $insertQuestionRowsData['qrlevel'] = $questionLevel;
+                $insertQuestionRowsData['qrtime'] = TIME;
+                $insertQuestionRowsData['qrauthor'] = \exam\master::$_user['sessionusername'];
+                $insertQuestionRowsData['qrpoints'] = explode(',', $rowData[$knowsIdIndex] ?: '');
+                $insertQuestionRowsData['qrsubject'] = $subject['subjectid'];
+
+                // 插入题冒数据，并跳出循环
+                $qrid = self::addQuestionRows($subject['subjectdb'], $insertQuestionRowsData);
+                if($qrid)$number['questionrows']++;
+                continue;
+            }
+
+            // 组装数据
+            $insertQuestionData = [];
+            $insertQuestionData['questiontype'] = $questionType;
+            $insertQuestionData['question'] = $questionContent;
+            $insertQuestionData['questionselect'] = $questionOptions;
+            $insertQuestionData['questionselectnumber'] = count($optionsIndexArr);
+            $insertQuestionData['questionanswer'] = $questionAnswer;
+            $insertQuestionData['questionintro'] = $questionAnalyze;
+            $insertQuestionData['questionlevel'] = $questionLevel;
+            $insertQuestionData['questiontime'] = TIME;
+            $insertQuestionData['questionsubject'] = $subject['subjectid'];;
+            $insertQuestionData['questionpoints'] = explode(',', $rowData[$knowsIdIndex] ?: '');
+            $insertQuestionData['questionauthor'] = \exam\master::$_user['sessionusername'];
+
+            // 判断题
+            if ($questionType === 'PDT') {
+                $insertQuestionData['questionselectnumber'] = 2;
+                $insertQuestionData['questionselect'] = '';
+            }
+
+            // 如果是题冒题并且题冒id存在，则将其与题冒绑定
+            $addKey = 'question';
+            if ($isQR && $qrid) {
+                $insertQuestionData['questionparent'] = $qrid;
+                $addKey = 'childquestion';
+            }
+
+            // 插入试题数据
+            $id = self::addQuestion($subject['subjectdb'], $insertQuestionData);
+            if($id)$number[$addKey]++;
+        }
+    }
+
+    static function importQuestions($uploadfile, $subject)
+    {
+        $qrid = 0;
+        $number = array('question' => 0,'questionrows' => 0,'childquestion' => 0);
+
+        // 导入表格数据
+        $spreadsheet = IOFactory::load($uploadfile);
+        foreach ($spreadsheet->getWorksheetIterator() as $sheet) {
+            self::importQuestionByXlsxSheet($sheet, $subject, $number, $qrid);
+        }
+
+        if($qrid) self::resetRowsQuestionNumber($subject['subjectdb'], $qrid);
+
+        return $number;
+    }
+
+    static function importQuestions_bak($uploadfile,$subject)
     {
         $handle = fopen($uploadfile,"r");
         $qrid = 0;
@@ -351,7 +502,7 @@ class question
                         $args['qrquestion'] = $question[1];
                         $args['qrlevel'] = intval(trim($question[7]," \n\t"));
                         $args['qrtime'] = TIME;
-                        $args['qrauthor'] = \exam\app::$_user['sessionusername'];
+                        $args['qrauthor'] = \exam\master::$_user['sessionusername'];
                         $args['qrpoints'] = explode(',',$question[6]);
                         $args['qrsubject'] = $subject['subjectid'];
 
@@ -369,7 +520,7 @@ class question
                         if($qrid)$args['questionparent'] = $qrid;
                         $args['questionlevel'] = intval(trim($question[7]," \n\t"));
                         $args['questiontime'] = TIME;
-                        $args['questionusername'] = \exam\app::$_user['sessionusername'];
+                        $args['questionusername'] = \exam\master::$_user['sessionusername'];
                         $args['questionsubject'] = $subject['subjectid'];
                         $id = self::addQuestion($subject['subjectdb'],$args);
                         if($id)$number['childquestion']++;
@@ -383,7 +534,7 @@ class question
                     $args['questionselectnumber'] = intval(trim($question[3]," \n\t"));
                     $args['questionanswer'] = trim($question[4]," \n\t");
                     $args['questionintro'] = trim($question[5]," \n\t");
-                    $args['questionusername'] = \exam\app::$_user['sessionusername'];;
+                    $args['questionusername'] = \exam\master::$_user['sessionusername'];;
                     $args['questionpoints'] = explode(',',$question[6]);
                     $args['questionlevel'] = intval(trim($question[7]," \n\t"));
                     $args['questiontime'] = TIME;

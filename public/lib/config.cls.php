@@ -2,6 +2,7 @@
 
 error_reporting(E_ERROR | E_PARSE);
 define('TIME',time());
+
 class config
 {
     const defaultapp = 'content';

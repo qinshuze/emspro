@@ -1,7 +1,7 @@
 {x2;if:!$_userhash}
-{x2;include:header}
+{x2;include:../../../common/view/master/header}
 <body>
-{x2;include:nav}
+{x2;include:../../../common/view/master/nav}
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="pep">
@@ -146,7 +146,7 @@
         data: treeData
     });
 </script>
-{x2;include:footer}
+{x2;include:../../../common/view/master/footer}
 </body>
 </html>
 {x2;endif}

@@ -120,7 +120,7 @@ class exams
         if(\route::get('addpaper'))
         {
             $args = \route::get('args');
-            $args['paperauthor'] = \exam\app::$_user['sessionusername'];
+            $args['paperauthor'] = \exam\master::$_user['sessionusername'];
             $args['papertime'] = TIME;
             $totalscore = 0;
             foreach($args['papersetting']['questype'] as $key => $p)

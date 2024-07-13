@@ -113,7 +113,7 @@ class route
         return self::$url[$key];
     }
 
-    static private function initData($data)
+    static public function initData($data)
     {
         //if($_SERVER['HTTP_HOST'] != '127.0.0.1')return false;
         if(is_array($data))

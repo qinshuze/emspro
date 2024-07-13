@@ -12,7 +12,7 @@ class uploader
 {
     public function __construct()
     {
-        $this->allowexts = array('csv','swf','jpg','png','mp4');
+        $this->allowexts = array('csv', 'xlsx', 'xls', 'swf','jpg','png','mp4');
     }
 
     public function ckeditor()

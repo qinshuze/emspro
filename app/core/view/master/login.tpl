@@ -1,6 +1,6 @@
-{x2;include:header}
+{x2;include:../../../common/view/master/header}
 <body>
-{x2;include:nav}
+{x2;include:../../../common/view/master/nav}
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="pep">
@@ -39,6 +39,6 @@
 		</div>
 	</div>
 </div>
-{x2;include:footer}
+{x2;include:../../../common/view/master/footer}
 </body>
 </html>

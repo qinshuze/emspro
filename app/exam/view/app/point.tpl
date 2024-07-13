@@ -1,4 +1,4 @@
-{x2;include:header}
+{x2;include:../../../common/view/app/header}
 <body>
 {x2;include:top}
 <div class="container-fluid">
@@ -6,7 +6,8 @@
         <div class="pep nav">
             <div class="col-xs-3 title">
                 <ul class="list-unstyled list-inline">
-                    <li class="nopadding"><a href="index.php"><img src="public/static/images/index_logo.jpg" /></a></li>
+                    <!--<li class="nopadding"><a href="index.php"><img src="public/static/images/index_logo.jpg" /></a></li>-->
+                    <li class="nopadding"><h1 style="color: #5e6972"><?php echo env('APP_NAME'); ?></h1></li>
                 </ul>
             </div>
             <div class="col-xs-6">
@@ -314,7 +315,7 @@
         </div>
     </div>
 </div>
-{x2;include:footer}
+{x2;include:../../../common/view/app/footer}
 <script>
     function prepage(){
         {x2;if:$number > 1}
