@@ -1,6 +1,6 @@
 {x2;include:../../../common/view/app/header}
 <body>
-<div class="container-fluid">
+<div class="container-fluid content-container">
 	<div class="row-fluid header">
 		<div class="pep header">
 			<div class="col-xs-4">

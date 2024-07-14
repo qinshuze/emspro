@@ -1,7 +1,7 @@
 {x2;include:../../../common/view/app/header}
 <body>
 {x2;include:../../../common/view/app/nav}
-<div class="container-fluid">
+<div class="container-fluid content-container">
 	<div class="row-fluid panels">
 		<div class="pep panels">
 			<div class="col-xs-12 nopadding">

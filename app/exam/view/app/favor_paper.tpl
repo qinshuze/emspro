@@ -1,7 +1,7 @@
 {x2;include:../../../common/view/app/header}
 <body>
 {x2;include:top}
-<div class="container-fluid">
+<div class="container-fluid content-container">
     <div class="row-fluid nav">
         <div class="pep nav">
             <div class="col-xs-3 title">

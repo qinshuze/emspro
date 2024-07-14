@@ -19,4 +19,10 @@
     <script src="public/static/js/md5-min.js"></script>
     <script src="public/static/js/echarts.min.js"></script>
     <script src="public/static/js/vue.min.js"></script>
+    <style>
+        .container-fluid.content-container {
+            min-height: calc(100% - 286.5px);
+            background-color: #f5f5f5;
+        }
+    </style>
 </head>

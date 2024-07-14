@@ -4,7 +4,7 @@
             <div class="col-xs-4">
                 <ul class="list-unstyled list-inline">
                     <li><i class="glyphicon glyphicon-phone-alt" style="font-size: 16px"></i></li>
-                    <li>电话：13900139000</li>
+                    <li>电话：<?php echo env('APP_TELEPHONE'); ?></li>
                 </ul>
             </div>
             <div class="col-xs-8 text-right">
@@ -22,10 +22,10 @@
                     <li>|</li>
                     <li><a href="index.php?user-app-login-register">快速注册</a></li>
                     {x2;endif}
-                    <li>|</li>
+                    <!--<li>|</li>
                     <li>关于我们</li>
                     <li>|</li>
-                    <li>帮助信息</li>
+                    <li>帮助信息</li>-->
                 </ul>
             </div>
         </div>
