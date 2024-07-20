@@ -50,9 +50,9 @@
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
-                <p class="pagebox margin">
+                <!--<p class="pagebox margin">
                     <img src="public/static/images/qrcode.jpg" width="100%"/>
-                </p>
+                </p>-->
             </div>
             <div class="col-xs-9 nopadding">
                 {x2;if:$question}

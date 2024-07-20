@@ -24,5 +24,9 @@
             min-height: calc(100% - 286.5px);
             background-color: #f5f5f5;
         }
+
+        .pep.panels .pagebox .panel-body .question .selectbox .selector {
+            display: block !important;
+        }
     </style>
 </head>

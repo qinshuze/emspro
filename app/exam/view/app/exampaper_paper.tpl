@@ -1,6 +1,6 @@
 {x2;include:../../../common/view/app/header}
 <body>
-<div class="container-fluid content-container">
+<!--<div class="container-fluid">
 	<div class="row-fluid header">
 		<div class="pep header">
 			<div class="col-xs-4">
@@ -22,13 +22,15 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div>-->
+{x2;include:top}
 <div class="container-fluid">
 	<div class="row-fluid nav">
 		<div class="pep nav">
 			<div class="col-xs-3 title">
 				<ul class="list-unstyled list-inline">
-					<li class="nopadding"><img src="public/static/images/index_logo.jpg" /></li>
+					<!--<li class="nopadding"><img src="public/static/images/index_logo.jpg" /></li>-->
+					<li class="nopadding"><h1 style="color: #5e6972"><?php echo env('APP_NAME'); ?></h1></li>
 				</ul>
 			</div>
             <div class="col-xs-6">
@@ -46,7 +48,7 @@
 		</div>
 	</div>
 </div>
-<div class="container-fluid">
+<div class="container-fluid content-container">
 	<div class="row-fluid panels">
 		<div class="pep panels">
 			<div class="col-xs-3" style="padding-left: 0px;">
