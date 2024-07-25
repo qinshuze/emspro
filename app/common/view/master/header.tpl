@@ -24,5 +24,13 @@
         .panel {
             margin-bottom: 150px;
         }
+        .tips {
+            margin: 0;
+            padding: 10px;
+            background: #e5f2fe;
+            border-radius: 5px;
+            color: #345c7e;
+            font-weight: 500;
+        }
     </style>
 </head>
